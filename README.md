@@ -1,6 +1,6 @@
 # Life Coach
 
-Life Coach is a project that aims to make life easier to get what you want in life.
+Life Coach is a solution that aims to make life easier to get what you want in life.
 
 ## Goals
 
@@ -8,7 +8,7 @@ Life Coach is a project that aims to make life easier to get what you want in li
 2. Present what activity I should work on next
 3. Forecast when I expect to achieve my goals & projects
 
-## Use case diagram
+## Use cases
 
 ![Use Case Diagram](/ReadMeResources/UseCaseDiagram.png)
 	
