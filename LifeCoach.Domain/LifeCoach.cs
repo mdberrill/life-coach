@@ -24,6 +24,11 @@ namespace LifeCoach.Domain
         {
             CurrentClient = client;
         }
+
+        public void NoteClientActivity(string activityName)
+        {
+            CurrentClient.AddActivity(activityName);
+        }
     }
 
     public class LifeCoachRepository
