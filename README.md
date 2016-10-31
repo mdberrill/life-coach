@@ -16,7 +16,7 @@ Work is in progress.
 
 ## Use cases
 
-![Use Case Diagram](/ReadMeResources/UseCaseDiagram.png)
+![Use Case Diagram](ReadMeResources/UseCaseDiagram.png)
 
 
 	
