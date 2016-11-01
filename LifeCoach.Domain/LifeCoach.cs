@@ -27,14 +27,26 @@ namespace LifeCoach.Domain
 
         public void NoteClientActivity(string activityName)
         {
-            CurrentClient.AddActivity(activityName);
+            var activity = new Activity(activityName);
+            activity.DueDateTime = DateTime.Today.AddDays(1);
+            CurrentClient.AddActivity(activity);
+        }
+
+        public void NoteClientActivity(Activity activity)
+        {
+            CurrentClient.AddActivity(activity);
+        }
+
+        public void EndMeetingWith(string clientName)
+        {
+            CurrentClient = null;
         }
     }
 
     public class LifeCoachRepository
     {
 
-        public LifeCoach LoadPreviousClient()
+        public LifeCoach WakeUp()
         {
             XmlSerializer serialiser = new XmlSerializer(typeof(LifeCoach));
             if (File.Exists(".lifecoach/lifecoach.xml"))
@@ -48,7 +60,7 @@ namespace LifeCoach.Domain
             else return null;
         }
 
-        public void SaveClient(LifeCoach lifeCoach)
+        public void PutToSleep(LifeCoach lifeCoach)
         {
             XmlSerializer serialiser = new XmlSerializer(typeof(LifeCoach));
             if (!Directory.Exists(".lifecoach"))
@@ -73,7 +85,15 @@ namespace LifeCoach.Domain
             }
         }
 
-        public Client LoadPreviousClient(string clientName)
+        public void DeleteClient(string clientName)
+        {
+            if (File.Exists(".lifecoach/" + clientName + ".xml"))
+            {
+                File.Delete(".lifecoach/" + clientName + ".xml");
+            }
+        }
+
+        public Client WakeUpInMeetingWith(string clientName)
         {
             XmlSerializer clientSerialiser = new XmlSerializer(typeof(Client));
             if (File.Exists(".lifecoach/" + clientName + ".xml"))

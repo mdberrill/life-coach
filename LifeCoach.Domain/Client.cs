@@ -9,13 +9,13 @@ namespace LifeCoach.Domain
     public class Client
     {
         public string Name { get; set; }
-        private List<string> activities = new List<string>();
-        public string[] Activities
+        private List<Activity> activities = new List<Activity>();
+        public Activity[] Activities
         {
             get { return activities.ToArray();}
             set
             {
-                activities = new List<string>(value);
+                activities = new List<Activity>(value);
             }
         }
 
@@ -27,7 +27,12 @@ namespace LifeCoach.Domain
         }
         public void AddActivity(string name)
         {
-            activities.Add(name);
+            activities.Add(new Activity(name));
+        }
+
+        internal void AddActivity(Activity activity)
+        {
+            activities.Add(activity);
         }
     }
 }
