@@ -17,7 +17,7 @@ namespace LifeCoach.Console
         [Verb("note-activity", HelpText ="Ask the life coach to note down a new activity")]
         class NoteActivity
         {
-            [Value(0, Required = true)]
+            [Value(0, MetaName ="Activity Name", Required = true, HelpText ="the name of the activity")]
             public string ActivityName { get; set; }
 
             [Option('d', HelpText ="Due Date")]
