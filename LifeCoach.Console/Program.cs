@@ -2,6 +2,8 @@
 using LifeCoach.Domain;
 using MarkdownLog;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace LifeCoach.Console
@@ -35,6 +37,9 @@ namespace LifeCoach.Console
 
             [Option('d', HelpText ="Due Date")]
             public DateTime? DueTime { get; set; }
+
+            [Option("note", HelpText ="Write a note for the activity")]
+            public bool WriteNote { get; set; }
         }
 
         [Verb("complete-activity", HelpText = "complete an activity")]
@@ -116,6 +121,7 @@ namespace LifeCoach.Console
                         System.Console.WriteLine(" Currently meeting with " + lifeCoach.CurrentClient.Name);
                     else
                         System.Console.WriteLine(" No meeting");
+                                        
                     return 0;
                 },
                 (ActivityList opts) =>
@@ -154,6 +160,28 @@ namespace LifeCoach.Console
                         System.Console.WriteLine("Updated name to : " + opts.Name);
                     }
 
+                    if (opts.WriteNote)
+                    {
+                        if (string.IsNullOrEmpty(activity.NoteFile))
+                        {
+                            activity.NoteFile = activity.Id.ToString()+".txt";
+                            File.Create(".lifecoach/" + activity.NoteFile).Close();
+                        }
+                        using (Process cmd = new Process())
+                        {
+                            cmd.StartInfo.FileName = "notepad.exe";
+                            cmd.StartInfo.Arguments = ".lifecoach/" + activity.NoteFile;
+                            cmd.StartInfo.RedirectStandardInput = true;
+                            cmd.StartInfo.RedirectStandardOutput = true;
+                            cmd.StartInfo.CreateNoWindow = false;
+                            cmd.StartInfo.UseShellExecute = false;
+
+                            cmd.Start();
+
+                            cmd.WaitForExit();
+                            cmd.StandardInput.Close();
+                        }
+                    }
                     repo.PutToSleep(lifeCoach);
                     return 0;
                 },

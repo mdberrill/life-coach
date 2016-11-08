@@ -8,6 +8,7 @@ namespace LifeCoach.Domain
         public string Name { get; set; }
         public DateTime DueDateTime { get; set; }
         public bool IsComplete { get; set; }
+        public string NoteFile { get; set; }
 
         protected Activity() { }
         public Activity(string name)
