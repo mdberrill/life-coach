@@ -80,9 +80,7 @@ namespace LifeCoach.GoogleCalendarGateway
             CalendarListResource.ListRequest listRequest = service.CalendarList.List();
             var calendarList = listRequest.Execute();
             foreach (var calendar in calendarList.Items)
-            {
-                Console.WriteLine(calendar.Summary);
-                Console.WriteLine(calendar.Id);
+            {             
                 if (calendar.Summary == calendarName)
                 {
                     return calendar.Id;
@@ -107,8 +105,7 @@ namespace LifeCoach.GoogleCalendarGateway
                      new[] { CalendarService.Scope.Calendar },
                     "user",
                     CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                    new FileDataStore(credPath, true)).Result;               
             }
 
             // Create Google Calendar API service.
