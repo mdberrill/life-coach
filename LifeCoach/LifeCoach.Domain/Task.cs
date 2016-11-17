@@ -5,15 +5,14 @@ namespace LifeCoach.Domain
     public class Task
     {
         public string Description { get; private set; }
-        public Guid Id { get; private set; }
+        public string Id { get; set; }
 
         public static Task CreateTask(string description)
         {
-            return new Task(Guid.NewGuid(), description);
+            return new Task( description);
         }
-        public Task(Guid id, string description)
+        public Task(string description)
         {
-            Id = id;
             Description = description;
         }
     }

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Domain", "LifeCoa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Domain.Tests", "LifeCoach.Domain.Tests\LifeCoach.Domain.Tests.csproj", "{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Integration.Tests", "LifeCoach.Integration.Tests\LifeCoach.Integration.Tests.csproj", "{C338F764-E57B-44D7-AEE7-F2725B25B41C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.GoogleCalendarGateway", "LifeCoach.GoogleCalendarGateway\LifeCoach.GoogleCalendarGateway.csproj", "{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

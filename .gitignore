@@ -11,3 +11,7 @@
 /LifeCoach/LifeCoach.Domain.Tests/bin/Debug
 /LifeCoach/LifeCoach.Domain/bin/Debug
 /LifeCoach/packages
+/LifeCoach/LifeCoach.GoogleCalendarGateway/bin/Debug
+/LifeCoach/LifeCoach.GoogleCalendarGateway/obj/Debug
+/LifeCoach/LifeCoach.Integration.Tests/bin/Debug
+/LifeCoach/LifeCoach.Integration.Tests/obj/Debug
