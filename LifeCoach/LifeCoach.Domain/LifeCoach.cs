@@ -21,10 +21,4 @@ namespace LifeCoach.Domain
             return _taskRepo.GetTaskById(id);
         }
     }
-
-    public interface ITaskRepository
-    {
-        void AddTask(Task task);
-        Task GetTaskById(Guid id);
-    }
 }
