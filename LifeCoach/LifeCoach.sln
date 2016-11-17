@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Console", "LifeCoach.Console\LifeCoach.Console.csproj", "{FD7AC790-1C31-4E82-AD39-3DCE9C20BF2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Domain", "LifeCoach.Domain\LifeCoach.Domain.csproj", "{3A4A6D86-5205-46FC-80A3-DCD7C2DF8DB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Domain.Tests", "LifeCoach.Domain.Tests\LifeCoach.Domain.Tests.csproj", "{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.Integration.Tests", "LifeCoach.Integration.Tests\LifeCoach.Integration.Tests.csproj", "{C338F764-E57B-44D7-AEE7-F2725B25B41C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCoach.GoogleCalendarGateway", "LifeCoach.GoogleCalendarGateway\LifeCoach.GoogleCalendarGateway.csproj", "{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD7AC790-1C31-4E82-AD39-3DCE9C20BF2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7AC790-1C31-4E82-AD39-3DCE9C20BF2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7AC790-1C31-4E82-AD39-3DCE9C20BF2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7AC790-1C31-4E82-AD39-3DCE9C20BF2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4A6D86-5205-46FC-80A3-DCD7C2DF8DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4A6D86-5205-46FC-80A3-DCD7C2DF8DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4A6D86-5205-46FC-80A3-DCD7C2DF8DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4A6D86-5205-46FC-80A3-DCD7C2DF8DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{647FA784-9F4D-4FDB-A29B-02A0F912A4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C338F764-E57B-44D7-AEE7-F2725B25B41C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BBA2092-7BAF-4511-8E2D-6FC94DAC6BB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

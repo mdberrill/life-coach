@@ -1,0 +1,17 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.suo
+/LifeCoach/LifeCoach.Console/bin/Debug
+/LifeCoach/LifeCoach.Console/obj/Debug
+/LifeCoach/LifeCoach.Domain/obj/Debug
+/LifeCoach/LifeCoach.Domain.Tests/obj/Debug
+/LifeCoach/packages/NUnit.3.5.0
+/LifeCoach/LifeCoach.Domain.Tests/bin/Debug
+/LifeCoach/LifeCoach.Domain/bin/Debug
+/LifeCoach/packages
+/LifeCoach/LifeCoach.GoogleCalendarGateway/bin/Debug
+/LifeCoach/LifeCoach.GoogleCalendarGateway/obj/Debug
+/LifeCoach/LifeCoach.Integration.Tests/bin/Debug
+/LifeCoach/LifeCoach.Integration.Tests/obj/Debug
