@@ -8,6 +8,7 @@ using LifeCoach.GoogleCalendarGateway;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace LifeCoach.Integration.Tests
@@ -36,6 +37,21 @@ namespace LifeCoach.Integration.Tests
             Assert.IsNotNull(evt);
             Assert.AreEqual(evt.Summary, "MyTestTask");
             Console.WriteLine("{0}", evt.Summary);
+        }
+
+        [Test]
+        public void GetTaskWithNoDates_WhenSeveralTasksExistWithNoDates_ShouldReturnTasks()
+        {
+            GoogleTaskRepository sut = new GoogleTaskRepository(getSecretFilePath(), LifeCoachTestCalendarName);
+            Task task = Task.CreateTask("MyTestTask");
+            sut.AddTask(task);
+
+            Task task2 = Task.CreateTask("My second task");
+            sut.AddTask(task2);
+
+            var tasks = sut.GetTaskWithNoDates().ToArray();
+            Assert.That(tasks.Any(x => x.Id == task.Id));
+            Assert.That(tasks.Any(x => x.Id == task2.Id));
         }
 
         [OneTimeTearDown]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LifeCoach.Domain
 {
@@ -16,9 +17,9 @@ namespace LifeCoach.Domain
             _taskRepo.AddTask(task);
         }
 
-        public Task GetTaskById(Guid id)
+        public IEnumerable<Task> GetTasksWithNoDates()
         {
-            return _taskRepo.GetTaskById(id);
+            return _taskRepo.GetTaskWithNoDates();
         }
     }
 }

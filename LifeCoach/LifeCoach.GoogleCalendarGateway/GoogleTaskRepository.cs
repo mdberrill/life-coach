@@ -5,6 +5,7 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using LifeCoach.Domain;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -14,6 +15,7 @@ namespace LifeCoach.GoogleCalendarGateway
     {
         private string _clientSecretFilePath;
         private string _calendarName;
+        private static DateTime NoDateTimeDate = new DateTime(2100, 1, 1);
 
         public GoogleTaskRepository(string clientSecretFilePath, string calendarName)
         {
@@ -32,12 +34,29 @@ namespace LifeCoach.GoogleCalendarGateway
             Event evt = new Event();
             evt.Summary = task.Description;
             // set start and end date far into the future
-            evt.Start = new EventDateTime() { DateTime = new DateTime(2100, 1, 1)};
-            evt.End = new EventDateTime() { DateTime = new DateTime(2100, 1, 1) };            
+            evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
+            evt.End = new EventDateTime() { DateTime = NoDateTimeDate };            
 
             var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
             var evtRet =  insertEvtReq.Execute();
             task.Id = evtRet.Id;            
+        }
+
+        public IEnumerable<Task> GetTaskWithNoDates()
+        {
+            var calendarService = getCalendarService();
+            var calendarId = getLifeCoachCalendarId(calendarService, _calendarName);
+
+            var getEventsListRequest = calendarService.Events.List(calendarId);
+            getEventsListRequest.TimeMin = NoDateTimeDate.AddMinutes(-1);
+            getEventsListRequest.TimeMax = NoDateTimeDate.AddMinutes(1);
+
+            var events = getEventsListRequest.Execute();
+
+            foreach (var evt in events.Items)
+            {
+                yield return new Task(evt.Summary) { Id = evt.Id };
+            }
         }
 
         private string createCalendar(CalendarService calendarService)
@@ -54,11 +73,6 @@ namespace LifeCoach.GoogleCalendarGateway
             CalendarListResource.InsertRequest insertCalendarRequest = calendarService.CalendarList.Insert(cle);
             var item = insertCalendarRequest.Execute();
             return cal.Id;
-        }
-
-        public Task GetTaskById(Guid id)
-        {
-            throw new NotImplementedException();
         }
 
         private static string getLifeCoachCalendarId(CalendarService service, string calendarName)
@@ -105,6 +119,7 @@ namespace LifeCoach.GoogleCalendarGateway
             });
             return service;
         }
+
 
     }
 }

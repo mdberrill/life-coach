@@ -48,6 +48,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="client_secret.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LifeCoach.Domain\LifeCoach.Domain.csproj">
+      <Project>{3a4a6d86-5205-46fc-80a3-dcd7c2df8db2}</Project>
+      <Name>LifeCoach.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LifeCoach.GoogleCalendarGateway\LifeCoach.GoogleCalendarGateway.csproj">
+      <Project>{2bba2092-7baf-4511-8e2d-6fc94dac6bb2}</Project>
+      <Name>LifeCoach.GoogleCalendarGateway</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
