@@ -30,15 +30,14 @@ namespace LifeCoach.GoogleCalendarGateway
                 calendarId = createCalendar(calendarService);
 
             Event evt = new Event();
-        
-            evt.Start = new EventDateTime() { DateTime = DateTime.Now};
-            evt.End = new EventDateTime() { DateTime = DateTime.Now };
             evt.Summary = task.Description;
+            // set start and end date far into the future
+            evt.Start = new EventDateTime() { DateTime = new DateTime(2100, 1, 1)};
+            evt.End = new EventDateTime() { DateTime = new DateTime(2100, 1, 1) };            
 
             var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
             var evtRet =  insertEvtReq.Execute();
-            task.Id = evtRet.Id;
-            Console.WriteLine(evtRet.Id);
+            task.Id = evtRet.Id;            
         }
 
         private string createCalendar(CalendarService calendarService)
