@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 
 namespace LifeCoach.Domain.Tests
 {
@@ -8,12 +9,35 @@ namespace LifeCoach.Domain.Tests
         [Test]
         public void NoteTask_WithValidTask_ShouldCreateTask()
         {
-            LifeCoach lifeCoach = new LifeCoach();
+            Mock<ITaskRepository> mockTaskRepo = new Mock<ITaskRepository>();
+            LifeCoach lifeCoach = new LifeCoach(mockTaskRepo.Object);
             Task task = Task.CreateTask("MyTestTask");
+
+            mockTaskRepo.Setup(x => x.AddTask(task));
+
             lifeCoach.NoteTask(task);
 
-            var taskRetrieved = lifeCoach.GetTaskById(task.Id);
-            Assert.AreEqual("MyTestTask", taskRetrieved.Description);
+            mockTaskRepo.VerifyAll();
+        }
+
+        [Test]
+        public void NoteTask_SeveralTimesWithDifferentTasks_ShouldCreateTasks()
+        {
+            Mock<ITaskRepository> mockTaskRepo = new Mock<ITaskRepository>();
+            LifeCoach lifeCoach = new LifeCoach(mockTaskRepo.Object);
+            Task task = Task.CreateTask("MyTestTask");
+
+            mockTaskRepo.Setup(x => x.AddTask(task));
+
+            lifeCoach.NoteTask(task);
+
+            Task myOtherTask = Task.CreateTask("MyOtherTask");
+
+            mockTaskRepo.Setup(x => x.AddTask(myOtherTask));
+
+            lifeCoach.NoteTask(myOtherTask);
+
+            mockTaskRepo.VerifyAll();
         }
     }
 }
