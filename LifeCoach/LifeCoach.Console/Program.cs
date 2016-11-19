@@ -27,7 +27,7 @@ namespace LifeCoach.Console
             .MapResult(
                (NoteTask opts) =>
                {
-                   lifeCoach.NoteTask(new Task(opts.TaskName));
+                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName));
                    return 0;
                },
                (TaskList opts) =>

@@ -54,6 +54,28 @@ namespace LifeCoach.Integration.Tests
             Assert.That(tasks.Any(x => x.Id == task2.Id));
         }
 
+        [Test]
+        public void AddTask_WithTaskWithDate_ShouldAddTaskWithDateToGoogleCalendar()
+        {
+            GoogleTaskRepository sut = new GoogleTaskRepository(getSecretFilePath(), LifeCoachTestCalendarName);
+            var taskDueDate = new DateTime(2016, 10, 1, 14, 05, 47);
+            Task task = Task.CreateTask("MyTestTask", taskDueDate);
+            sut.AddTask(task);
+
+            CalendarService service = getCalendarService();
+
+            var lifeCoachCalendarId = getLifeCoachCalendarId(service, LifeCoachTestCalendarName);
+
+            Assert.IsNotNull(lifeCoachCalendarId, "The life coach calendar should exist");
+
+            EventsResource.GetRequest request = service.Events.Get(lifeCoachCalendarId, task.Id.ToString());
+
+            Event evt = request.Execute();
+            Assert.IsNotNull(evt);
+            Assert.AreEqual(evt.Summary, "MyTestTask");
+            Assert.AreEqual(taskDueDate, evt.End.DateTime);
+        }
+
         [OneTimeTearDown]
         public void DeleteTestCalendarIfExists()
         {

@@ -34,8 +34,17 @@ namespace LifeCoach.GoogleCalendarGateway
             Event evt = new Event();
             evt.Summary = task.Description;
             // set start and end date far into the future
-            evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
-            evt.End = new EventDateTime() { DateTime = NoDateTimeDate };            
+
+            if (task.DueDateTime == null)
+            {
+                evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
+                evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
+            }
+            else
+            {
+                evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
+                evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
+            }
 
             var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
             var evtRet =  insertEvtReq.Execute();
@@ -55,7 +64,7 @@ namespace LifeCoach.GoogleCalendarGateway
 
             foreach (var evt in events.Items)
             {
-                yield return new Task(evt.Summary) { Id = evt.Id };
+                yield return new Task(evt.Id, evt.Summary, null) ;
             }
         }
 
