@@ -32,10 +32,18 @@ namespace LifeCoach.GoogleCalendarGateway
                 calendarId = createCalendar(calendarService);
 
             Event evt = new Event();
-            evt.Summary = task.Description;
-            // set start and end date far into the future
-            evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
-            evt.End = new EventDateTime() { DateTime = NoDateTimeDate };            
+            evt.Summary = task.Description;           
+
+            if (task.DueDateTime == null)  // then set start and end date far into the future
+            {
+                evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
+                evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
+            }
+            else
+            {
+                evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
+                evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
+            }
 
             var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
             var evtRet =  insertEvtReq.Execute();
@@ -43,21 +51,34 @@ namespace LifeCoach.GoogleCalendarGateway
         }
 
         public IEnumerable<Task> GetTaskWithNoDates()
+        {            
+            return GetTaskDueWithin(NoDateTimeDate.AddMinutes(-1), NoDateTimeDate.AddMinutes(1));
+        }
+
+        public IEnumerable<Task> GetTasksDueOn(DateTime value)
+        {
+            return GetTaskDueWithin(value, value.AddDays(1));
+        }
+
+        public IEnumerable<Task> GetTaskDueWithin(DateTime fromDueDateTime, DateTime toDueDateTime)
         {
             var calendarService = getCalendarService();
             var calendarId = getLifeCoachCalendarId(calendarService, _calendarName);
 
             var getEventsListRequest = calendarService.Events.List(calendarId);
-            getEventsListRequest.TimeMin = NoDateTimeDate.AddMinutes(-1);
-            getEventsListRequest.TimeMax = NoDateTimeDate.AddMinutes(1);
+            getEventsListRequest.TimeMin = fromDueDateTime;
+            getEventsListRequest.TimeMax = toDueDateTime;
 
             var events = getEventsListRequest.Execute();
 
             foreach (var evt in events.Items)
             {
-                yield return new Task(evt.Summary) { Id = evt.Id };
+                if (evt.End.DateTime == NoDateTimeDate)
+                    yield return new Task(evt.Id, evt.Summary, null);
+                else yield return new Task(evt.Id, evt.Summary, evt.End.DateTime);
             }
         }
+
 
         private string createCalendar(CalendarService calendarService)
         {
@@ -89,6 +110,7 @@ namespace LifeCoach.GoogleCalendarGateway
             return null;
         }
 
+    
         private CalendarService getCalendarService()
         {
             UserCredential credential;

@@ -39,5 +39,6 @@ namespace LifeCoach.Domain.Tests
 
             mockTaskRepo.VerifyAll();
         }
+        
     }
 }

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="LifeCoachTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
