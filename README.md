@@ -20,9 +20,16 @@ You can then ask what tasks you currently have:
 	LifeCoach list-tasks
 
 Which will print out the following:
+    
+          Id                    | Description       | DueDateTime
+     -------------------------- | ----------------- | -----------:     
+     tq0gv5nkg01c89p8b0atrt5hrk | My task           |
 
-     Description       | Id
-     ----------------- | --------------------------
-     My task           | tq0gv5nkg01c89p8b0atrt5hrk
+You can set a due date & time on a task using the -d switch:
 
+	LifeCoach note-task "Meet santa clause" 2016-12-25 00:00:10
+
+And then view all the tasks by a given date by specifying the -d switch:
+
+    LifeCoach list-tasks -d 2016-12-25
 
