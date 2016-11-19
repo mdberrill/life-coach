@@ -4,10 +4,9 @@ namespace LifeCoach.Domain
 {
     public class Task
     {
-        public DateTime? DueDateTime { get; private set; }
-
-        public string Description { get; private set; }
         public string Id { get; set; }
+        public string Description { get; private set; }
+        public DateTime? DueDateTime { get; private set; }       
 
         public static Task CreateTask(string description, DateTime? dueDateTime = null)
         {
