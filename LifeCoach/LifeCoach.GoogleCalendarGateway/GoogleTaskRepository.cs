@@ -55,6 +55,11 @@ namespace LifeCoach.GoogleCalendarGateway
             return GetTaskDueWithin(NoDateTimeDate.AddMinutes(-1), NoDateTimeDate.AddMinutes(1));
         }
 
+        public IEnumerable<Task> GetTasksDueOn(DateTime value)
+        {
+            return GetTaskDueWithin(value, value.AddDays(1));
+        }
+
         public IEnumerable<Task> GetTaskDueWithin(DateTime fromDueDateTime, DateTime toDueDateTime)
         {
             var calendarService = getCalendarService();

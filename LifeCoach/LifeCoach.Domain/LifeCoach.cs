@@ -21,5 +21,10 @@ namespace LifeCoach.Domain
         {
             return _taskRepo.GetTaskWithNoDates();
         }
+
+        public IEnumerable<Task> GetTasksDueOn(DateTime value)
+        {
+            return _taskRepo.GetTasksDueOn(value);
+        }
     }
 }
