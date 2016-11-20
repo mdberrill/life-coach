@@ -17,7 +17,7 @@ namespace LifeCoach.Domain
             _taskRepo.AddTask(task);
         }
 
-        public IEnumerable<Task> GetTasksWithNoDates()
+        public IEnumerable<Task> GetUnplannedTasks()
         {
             return _taskRepo.GetTaskWithNoDates();
         }
@@ -25,6 +25,11 @@ namespace LifeCoach.Domain
         public IEnumerable<Task> GetTasksDueOn(DateTime value)
         {
             return _taskRepo.GetTasksDueOn(value);
+        }
+                
+        public IEnumerable<Task> GetTasksDueBetween(DateTime from, DateTime to)
+        {
+            return _taskRepo.GetTasksDueBetween(from, to);
         }
     }
 }
