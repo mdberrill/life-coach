@@ -60,6 +60,11 @@ namespace LifeCoach.GoogleCalendarGateway
             return GetTaskDueWithin(value, value.AddDays(1));
         }
 
+        public IEnumerable<Task> GetTasksDueBetween(DateTime from, DateTime to)
+        {
+            return GetTaskDueWithin(from, to);
+        }
+
         public IEnumerable<Task> GetTaskDueWithin(DateTime fromDueDateTime, DateTime toDueDateTime)
         {
             var calendarService = getCalendarService();
@@ -138,7 +143,5 @@ namespace LifeCoach.GoogleCalendarGateway
             });
             return service;
         }
-
-
     }
 }

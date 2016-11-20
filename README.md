@@ -20,10 +20,11 @@ You can then ask what tasks you currently have:
 	LifeCoach list-tasks
 
 Which will print out the following:
-    
-          Id                    | Description       | DueDateTime
-     -------------------------- | ----------------- | -----------:     
-     tq0gv5nkg01c89p8b0atrt5hrk | My task           |
+<pre>    
+     Id     | Description       | Due Date
+     ------ | ----------------- | -----------:     
+     tq0gv5 | My task           | -
+</pre>
 
 You can set a due date & time on a task using the -d switch:
 
@@ -33,3 +34,14 @@ And then view all the tasks by a given date by specifying the -d switch:
 
     LifeCoach list-tasks -d 2016-12-25
 
+To view all your tasks today:
+
+    LifeCoach list-tasks
+
+To view all your unplanned tasks, .i.e. those without a due date:
+
+    LifeCoach list-tasks -u
+
+To view all your tasks in the next X days, e.g. 7 days:
+
+    LifeCoach list-tasks 7
