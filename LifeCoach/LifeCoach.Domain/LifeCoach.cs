@@ -17,6 +17,13 @@ namespace LifeCoach.Domain
             _taskRepo.AddTask(task);
         }
 
+        public void SetTaskCompleteStatus(string id, bool isCompleted)
+        {
+            var task = _taskRepo.GetTaskById(id);
+            task.IsComplete = isCompleted;
+            _taskRepo.UpdateTask(task);
+        }
+
         public IEnumerable<Task> GetUnplannedTasks()
         {
             return _taskRepo.GetTaskWithNoDates();
@@ -31,5 +38,7 @@ namespace LifeCoach.Domain
         {
             return _taskRepo.GetTasksDueBetween(from, to);
         }
+
+        
     }
 }

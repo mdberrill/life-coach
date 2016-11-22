@@ -9,5 +9,7 @@ namespace LifeCoach.Domain
         IEnumerable<Task> GetTaskWithNoDates();
         IEnumerable<Task> GetTasksDueOn(DateTime value);
         IEnumerable<Task> GetTasksDueBetween(DateTime from, DateTime to);
+        Task GetTaskById(string id);
+        void UpdateTask(Task task);
     }
 }

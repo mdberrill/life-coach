@@ -21,8 +21,7 @@ namespace LifeCoach.Console
         [Verb("list-tasks", HelpText = "Ask the life coach to list all the tasks you currently have")]
         class TaskList
         {
-
-            [Value(0, HelpText = "The number of days in the future that tasks are due, e.g. 7 would show all taks due in the next 7 days", Required = false)]
+            [Value(0, HelpText = "The number of days in the future that tasks are due, e.g. 7 would show all tasks due in the next 7 days", Required = false)]
             public int? DueInNextXDays { get; set; }
 
             [Option('d', "due", HelpText = "The date on which the tasks are due, e.g. 2016-11-19")]
@@ -31,20 +30,30 @@ namespace LifeCoach.Console
             [Option('u', "unplanned", HelpText = "View all unplanned tasks (those without a due date")]
             public bool Unplanned { get; set; }
 
-            [Option('f', "NoFormatting", HelpText ="Show output without any formatting")]
+            [Option('f', "NoFormatting", HelpText = "Show output without any formatting")]
             public bool NoFormatting { get; set; }
+        }
+
+        [Verb("complete-task")]
+        class CompleteTask
+        {
+            [Value(0, Required = true, HelpText = "The Id of the task. This is required to be enough characters of the task ID that ensures it is unique")]
+            public string Id { get; set; }
+
+            [Option('u', "Undo", HelpText ="Undo the complete status of the task back to incomplete")]
+            public bool Undo { get; set; }
         }
 
         static int Main(string[] args)
         {
             var taskRepo = new GoogleCalendarGateway.GoogleTaskRepository("client_secret.json", "Life Coach");
-            Domain.LifeCoach lifeCoach = new Domain.LifeCoach(taskRepo);            
+            Domain.LifeCoach lifeCoach = new Domain.LifeCoach(taskRepo);
 
-            return Parser.Default.ParseArguments<NoteTask, TaskList>(args)
+            return Parser.Default.ParseArguments<NoteTask, TaskList, CompleteTask>(args)
              .MapResult(
                (NoteTask opts) =>
                {
-                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName, opts.DueDateTime));
+                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName, dueDateTime: opts.DueDateTime));
                    return 0;
                },
                (TaskList opts) =>
@@ -58,12 +67,26 @@ namespace LifeCoach.Console
                        System.Console.Write(FormatTable(lifeCoach.GetUnplannedTasks(), opts.NoFormatting));
                    }
                    else if (opts.DueInNextXDays.HasValue)
-                   {
-                       System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today, DateTime.Today.AddDays(opts.DueInNextXDays.Value)), opts.NoFormatting));
+                   {                      
+                       if (opts.DueInNextXDays.Value < 0)
+                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today.AddDays(opts.DueInNextXDays.Value), DateTime.Today), opts.NoFormatting));
+                       else
+                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today, DateTime.Today.AddDays(opts.DueInNextXDays.Value)), opts.NoFormatting));
                    }
                    else // assume they want to see todays due tasks - most common use case - what have I got to do today
                    {
                        System.Console.Write(FormatTable(lifeCoach.GetTasksDueOn(DateTime.Today), opts.NoFormatting));
+                   }
+                   return 0;
+               },
+               (CompleteTask opts) =>
+               {
+                   if (!string.IsNullOrEmpty(opts.Id))
+                   {
+                       if (opts.Undo)
+                           lifeCoach.SetTaskCompleteStatus(opts.Id, false);
+                       else
+                           lifeCoach.SetTaskCompleteStatus(opts.Id, true);
                    }
                    return 0;
                },
@@ -79,11 +102,13 @@ namespace LifeCoach.Console
                 return tasks.ToMarkdownTable(
                     x => x.Id.Substring(0, 6),
                     x => x.Description.Length > 40 ? x.Description.Substring(0, 40) + "..." : x.Description,
-                    x => x.DueDateTime.HasValue ? x.DueDateTime.Value.ToString("G") : "-")
+                    x => x.DueDateTime.HasValue ? x.DueDateTime.Value.ToString("G") : "-",
+                    x => x.IsComplete ? "Yes" : "No")
                     .WithHeaders(
                     "Id",
                     "Description",
-                    "Due Date");
+                    "Due Date",
+                    "Done");
         }
     }
 }

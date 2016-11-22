@@ -7,6 +7,7 @@ using LifeCoach.Domain;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace LifeCoach.GoogleCalendarGateway
@@ -16,11 +17,46 @@ namespace LifeCoach.GoogleCalendarGateway
         private string _clientSecretFilePath;
         private string _calendarName;
         private static DateTime NoDateTimeDate = new DateTime(2100, 1, 1);
+        private const string DONE_TEXT = "Done : ";
 
         public GoogleTaskRepository(string clientSecretFilePath, string calendarName)
         {
             _clientSecretFilePath = clientSecretFilePath;
             _calendarName = calendarName;
+        }
+
+        public Task GetTaskById(string id)
+        {
+            var calendarService = getCalendarService();
+            var calendarId = getLifeCoachCalendarId(calendarService, _calendarName);
+
+            if (calendarId == null)
+                throw new Exception("No tasks managed by the life coach exist");
+            
+            
+            var getListRequest = calendarService.Events.List(calendarId);
+            var evts = getListRequest.Execute();
+
+            var evtsTasksWithId = getTasksMatchingId(evts, id).ToArray();
+
+            if (evtsTasksWithId.Length == 0)
+                throw new Exception("Could not find task with the Id : " + id);
+
+            if (evtsTasksWithId.Length > 1)
+                throw new Exception("More than one task was found matching the Id : " + id);
+
+            return evtsTasksWithId[0];
+        }
+
+        private IEnumerable<Task> getTasksMatchingId(Events events, string id)
+        {
+            foreach (Event evt in events.Items)
+            {
+                if (evt.Id.StartsWith(id))
+                {
+                    yield return BuildTaskFromEvent(evt);
+                }
+            }
         }
 
         public void AddTask(Task task)
@@ -31,8 +67,22 @@ namespace LifeCoach.GoogleCalendarGateway
             if (calendarId == null)
                 calendarId = createCalendar(calendarService);
 
+            var evt = BuildEventFromTask(task);
+
+            var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
+            var evtRet = insertEvtReq.Execute();
+            task.Id = evtRet.Id;
+        }
+
+        private static Event BuildEventFromTask(Task task)
+        {
             Event evt = new Event();
-            evt.Summary = task.Description;           
+            evt.Summary = task.Description;
+
+            if (task.IsComplete)
+            {
+                evt.Summary = DONE_TEXT + evt.Summary;
+            }
 
             if (task.DueDateTime == null)  // then set start and end date far into the future
             {
@@ -44,14 +94,24 @@ namespace LifeCoach.GoogleCalendarGateway
                 evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
                 evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
             }
+            return evt;
+        }
 
-            var insertEvtReq = calendarService.Events.Insert(evt, calendarId);
-            var evtRet =  insertEvtReq.Execute();
-            task.Id = evtRet.Id;            
+        public void UpdateTask(Task task)
+        {
+            var calendarService = getCalendarService();
+            var calendarId = getLifeCoachCalendarId(calendarService, _calendarName);
+
+            if (calendarId == null)
+                throw new Exception("No tasks managed by the life coach exist");
+
+            Event evt = BuildEventFromTask(task);
+            var updateRequest = calendarService.Events.Update(evt, calendarId, task.Id);
+            updateRequest.Execute();
         }
 
         public IEnumerable<Task> GetTaskWithNoDates()
-        {            
+        {
             return GetTaskDueWithin(NoDateTimeDate.AddMinutes(-1), NoDateTimeDate.AddMinutes(1));
         }
 
@@ -78,10 +138,26 @@ namespace LifeCoach.GoogleCalendarGateway
 
             foreach (var evt in events.Items)
             {
-                if (evt.End.DateTime == NoDateTimeDate)
-                    yield return new Task(evt.Id, evt.Summary, null);
-                else yield return new Task(evt.Id, evt.Summary, evt.End.DateTime);
+                yield return BuildTaskFromEvent(evt);
             }
+        }
+
+        private static Task BuildTaskFromEvent(Event evt)
+        {
+            bool isComplete = false;
+            string summary = evt.Summary;
+
+
+            if (summary.StartsWith(DONE_TEXT))
+            {
+                isComplete = true;
+                summary = summary.Remove(0, DONE_TEXT.Length);
+            }
+
+            if (evt.End.DateTime == NoDateTimeDate)
+                return Task.CreateTask(summary, evt.Id, null, isComplete);
+            else
+                return Task.CreateTask(summary, evt.Id, evt.End.DateTime, isComplete);
         }
 
 
@@ -106,7 +182,7 @@ namespace LifeCoach.GoogleCalendarGateway
             CalendarListResource.ListRequest listRequest = service.CalendarList.List();
             var calendarList = listRequest.Execute();
             foreach (var calendar in calendarList.Items)
-            {             
+            {
                 if (calendar.Summary == calendarName)
                 {
                     return calendar.Id;
@@ -115,7 +191,7 @@ namespace LifeCoach.GoogleCalendarGateway
             return null;
         }
 
-    
+
         private CalendarService getCalendarService()
         {
             UserCredential credential;
@@ -132,7 +208,7 @@ namespace LifeCoach.GoogleCalendarGateway
                      new[] { CalendarService.Scope.Calendar },
                     "user",
                     CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;               
+                    new FileDataStore(credPath, true)).Result;
             }
 
             // Create Google Calendar API service.
@@ -143,5 +219,7 @@ namespace LifeCoach.GoogleCalendarGateway
             });
             return service;
         }
+
+
     }
 }
