@@ -11,5 +11,6 @@ namespace LifeCoach.Domain
         IEnumerable<Task> GetTasksDueBetween(DateTime from, DateTime to);
         Task GetTaskById(string id);
         void UpdateTask(Task task);
+        void DeleteTask(Task task);
     }
 }
