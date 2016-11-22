@@ -17,7 +17,6 @@ namespace LifeCoach.GoogleCalendarGateway
         private string _clientSecretFilePath;
         private string _calendarName;
         private static DateTime NoDateTimeDate = new DateTime(2100, 1, 1);
-        private const string DONE_TEXT = "Done : ";
 
         public GoogleTaskRepository(string clientSecretFilePath, string calendarName)
         {
@@ -32,8 +31,8 @@ namespace LifeCoach.GoogleCalendarGateway
 
             if (calendarId == null)
                 throw new Exception("No tasks managed by the life coach exist");
-            
-            
+
+
             var getListRequest = calendarService.Events.List(calendarId);
             var evts = getListRequest.Execute();
 
@@ -74,27 +73,13 @@ namespace LifeCoach.GoogleCalendarGateway
             task.Id = evtRet.Id;
         }
 
-        private static Event BuildEventFromTask(Task task)
+        public void DeleteTask(Task task)
         {
-            Event evt = new Event();
-            evt.Summary = task.Description;
+            var calendarService = getCalendarService();
+            var calendarId = getLifeCoachCalendarId(calendarService, _calendarName);
 
-            if (task.IsComplete)
-            {
-                evt.Summary = DONE_TEXT + evt.Summary;
-            }
-
-            if (task.DueDateTime == null)  // then set start and end date far into the future
-            {
-                evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
-                evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
-            }
-            else
-            {
-                evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
-                evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
-            }
-            return evt;
+            var deleteRequest = calendarService.Events.Delete(calendarId, task.Id);
+            deleteRequest.Execute();
         }
 
         public void UpdateTask(Task task)
@@ -142,24 +127,59 @@ namespace LifeCoach.GoogleCalendarGateway
             }
         }
 
+        private static Event BuildEventFromTask(Task task)
+        {
+            Event evt = new Event();
+            evt.Summary = task.Description;
+            evt.ExtendedProperties = new Event.ExtendedPropertiesData();
+            evt.ExtendedProperties.Private__ = new Dictionary<string, string>();
+
+            if (task.IsComplete)
+            {
+                evt.ExtendedProperties.Private__["Done"] = "true";
+            }
+
+            if (task.IsDeleted)
+            {
+                evt.ExtendedProperties.Private__["Deleted"] = "true";
+            }
+
+            if (task.DueDateTime == null)  // then set start and end date far into the future
+            {
+                evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
+                evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
+            }
+            else
+            {
+                evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
+                evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
+            }
+            return evt;
+        }
+
         private static Task BuildTaskFromEvent(Event evt)
         {
             bool isComplete = false;
+            bool isDeleted = false;
             string summary = evt.Summary;
 
-
-            if (summary.StartsWith(DONE_TEXT))
+            if (evt.ExtendedProperties != null && evt.ExtendedProperties.Private__!= null && evt.ExtendedProperties.Private__.ContainsKey("Done") 
+                && evt.ExtendedProperties.Private__["Done"] == "true")
             {
                 isComplete = true;
-                summary = summary.Remove(0, DONE_TEXT.Length);
+            }
+
+            if (evt.ExtendedProperties != null && evt.ExtendedProperties.Private__ != null && evt.ExtendedProperties.Private__.ContainsKey("Deleted") 
+                && evt.ExtendedProperties.Private__["Deleted"] == "true")
+            {
+                isDeleted = true;
             }
 
             if (evt.End.DateTime == NoDateTimeDate)
-                return Task.CreateTask(summary, evt.Id, null, isComplete);
+                return Task.CreateTask(summary, evt.Id, null, isComplete, isDeleted);
             else
-                return Task.CreateTask(summary, evt.Id, evt.End.DateTime, isComplete);
+                return Task.CreateTask(summary, evt.Id, evt.End.DateTime, isComplete, isDeleted);
         }
-
 
         private string createCalendar(CalendarService calendarService)
         {

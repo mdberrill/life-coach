@@ -14,7 +14,7 @@ namespace LifeCoach.Console
             [Value(0, MetaName = "Task Name", Required = true, HelpText = "the name of the task")]
             public string TaskName { get; set; }
 
-            [Option('d', "due", HelpText = "The due date & time that the task is due e.g 2016-11-19 14:30")]
+            [Value(1, Required = false, Default = null, HelpText = "The due date & time that the task is due e.g 2016-11-19 14:30")]
             public DateTime? DueDateTime { get; set; }
         }
 
@@ -32,6 +32,9 @@ namespace LifeCoach.Console
 
             [Option('f', "NoFormatting", HelpText = "Show output without any formatting")]
             public bool NoFormatting { get; set; }
+
+            [Option("deleted", HelpText = "Show those tasks that have been deleted")]
+            public bool ShowDeleted { get; set; }
         }
 
         [Verb("complete-task")]
@@ -40,7 +43,23 @@ namespace LifeCoach.Console
             [Value(0, Required = true, HelpText = "The Id of the task. This is required to be enough characters of the task ID that ensures it is unique")]
             public string Id { get; set; }
 
-            [Option('u', "Undo", HelpText ="Undo the complete status of the task back to incomplete")]
+            [Option('u', "Undo", HelpText = "Undo the complete status of the task back to incomplete")]
+            public bool Undo { get; set; }
+        }
+
+        [Verb("delete-task")]
+        class DeleteTask
+        {
+            [Value(0, Required = true, HelpText = "The Id of the task. This is required to be enough characters of the task ID that ensures it is unique")]
+            public string Id { get; set; }
+
+            [Option('p', "Permanent", Default = false, HelpText = "Permanently delete task. A prompt will confirm this action.")]
+            public bool PermanentDelete { get; set; }
+
+            [Option('s', Default =false, HelpText ="Silent delete, does not prompt for any confirmations.")]
+            public bool Silent { get; set;}
+
+            [Option('u', "Undo", HelpText = "Undo the delete and restore the task")]
             public bool Undo { get; set; }
         }
 
@@ -49,7 +68,7 @@ namespace LifeCoach.Console
             var taskRepo = new GoogleCalendarGateway.GoogleTaskRepository("client_secret.json", "Life Coach");
             Domain.LifeCoach lifeCoach = new Domain.LifeCoach(taskRepo);
 
-            return Parser.Default.ParseArguments<NoteTask, TaskList, CompleteTask>(args)
+            return Parser.Default.ParseArguments<NoteTask, TaskList, CompleteTask, DeleteTask>(args)
              .MapResult(
                (NoteTask opts) =>
                {
@@ -60,22 +79,22 @@ namespace LifeCoach.Console
                {
                    if (opts.DueDate.HasValue)
                    {
-                       System.Console.Write(FormatTable(lifeCoach.GetTasksDueOn(opts.DueDate.Value.Date), opts.NoFormatting));
+                       System.Console.Write(FormatTable(lifeCoach.GetTasksDueOn(opts.DueDate.Value.Date, opts.ShowDeleted), opts.NoFormatting));
                    }
                    else if (opts.Unplanned)
                    {
-                       System.Console.Write(FormatTable(lifeCoach.GetUnplannedTasks(), opts.NoFormatting));
+                       System.Console.Write(FormatTable(lifeCoach.GetUnplannedTasks(opts.ShowDeleted), opts.NoFormatting));
                    }
                    else if (opts.DueInNextXDays.HasValue)
-                   {                      
-                       if (opts.DueInNextXDays.Value < 0)
-                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today.AddDays(opts.DueInNextXDays.Value), DateTime.Today), opts.NoFormatting));
-                       else
-                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today, DateTime.Today.AddDays(opts.DueInNextXDays.Value)), opts.NoFormatting));
-                   }
-                   else // assume they want to see todays due tasks - most common use case - what have I got to do today
                    {
-                       System.Console.Write(FormatTable(lifeCoach.GetTasksDueOn(DateTime.Today), opts.NoFormatting));
+                       if (opts.DueInNextXDays.Value < 0)
+                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today.AddDays(opts.DueInNextXDays.Value), DateTime.Today, opts.ShowDeleted), opts.NoFormatting));
+                       else
+                           System.Console.Write(FormatTable(lifeCoach.GetTasksDueBetween(DateTime.Today, DateTime.Today.AddDays(opts.DueInNextXDays.Value), opts.ShowDeleted), opts.NoFormatting));
+                   }
+                   else // assume they want to see today's due tasks - most common use case - what have I got to do today
+                   {
+                       System.Console.Write(FormatTable(lifeCoach.GetTasksDueOn(DateTime.Today, opts.ShowDeleted), opts.NoFormatting));
                    }
                    return 0;
                },
@@ -87,6 +106,31 @@ namespace LifeCoach.Console
                            lifeCoach.SetTaskCompleteStatus(opts.Id, false);
                        else
                            lifeCoach.SetTaskCompleteStatus(opts.Id, true);
+                   }
+                   return 0;
+               },
+               (DeleteTask opts) =>
+               {
+                   if (!string.IsNullOrEmpty(opts.Id))
+                   {
+                       if (opts.Undo)
+                       {
+                           lifeCoach.RestoreTask(opts.Id);
+                           return 0;
+                       }
+
+                       if (opts.PermanentDelete && !opts.Silent)
+                       {
+                           System.Console.WriteLine("Are you sure Y/N?");
+                           var confirmation = System.Console.ReadLine().ToUpper() == "Y";
+                           if (!confirmation)
+                           {
+                               System.Console.WriteLine("Nothing was deleted.");
+                               return -1;
+                           }
+                       }
+
+                       lifeCoach.DeleteTask(opts.Id, opts.PermanentDelete);
                    }
                    return 0;
                },
