@@ -13,7 +13,7 @@ Currently you can run the following commands:
 
 	LifeCoach note-task "My task"
 
-This will create a task in a google calendar called 'Life Coach' under the users account calendar. If the user will be asked authorisation via a web browser.
+This will create a task in a google calendar called 'Life Coach' under the users account calendar. If needed the user will be asked authorisation via a web browser.
 
 You can then ask what tasks you currently have:
 
