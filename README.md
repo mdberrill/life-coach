@@ -21,9 +21,9 @@ You can then ask what tasks you currently have:
 
 Which will print out the following:
 <pre>    
-     Id     | Description       | Due Date
-     ------ | ----------------- | -----------:     
-     tq0gv5 | My task           | -
+     Id     | Description       | Due Date    | Done 
+     ------ | ----------------- | ----------- | ----    
+     tq0gv5 | My task           | -           | No
 </pre>
 
 You can set a due date & time on a task using the -d switch:
@@ -45,3 +45,11 @@ To view all your unplanned tasks, .i.e. those without a due date:
 To view all your tasks in the next X days, e.g. 7 days:
 
     LifeCoach list-tasks 7
+
+To mark a task as completed use complete-task with the start of the Id:
+
+    LifeCoach complete-task tq0
+
+To undo this change and go back to incomplete you can use the -u switch
+
+    LifeCoach complete-task tq0 -u
