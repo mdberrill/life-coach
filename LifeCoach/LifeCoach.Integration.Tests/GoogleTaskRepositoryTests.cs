@@ -59,7 +59,7 @@ namespace LifeCoach.Integration.Tests
         {
             GoogleTaskRepository sut = new GoogleTaskRepository(getSecretFilePath(), LifeCoachTestCalendarName);
             var taskDueDate = new DateTime(2016, 10, 1, 14, 05, 47);
-            Task task = Task.CreateTask("MyTestTask", taskDueDate);
+            Task task = Task.CreateTask("MyTestTask", dueDateTime: taskDueDate);
             sut.AddTask(task);
 
             CalendarService service = getCalendarService();
@@ -81,7 +81,7 @@ namespace LifeCoach.Integration.Tests
         {
             GoogleTaskRepository sut = new GoogleTaskRepository(getSecretFilePath(), LifeCoachTestCalendarName);
             var taskDueDate = new DateTime(2016, 10, 1, 14, 05, 47);
-            Task task = Task.CreateTask("MyTestTask", taskDueDate);
+            Task task = Task.CreateTask("MyTestTask", dueDateTime: taskDueDate);
             sut.AddTask(task);
 
             var tasks = sut.GetTaskDueWithin(new DateTime(2016, 10, 1, 0, 0, 0), new DateTime(2016, 10, 2, 0, 0, 0)).ToArray();
