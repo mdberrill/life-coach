@@ -133,6 +133,8 @@ namespace LifeCoach.GoogleCalendarGateway
             evt.Summary = task.Description;
             evt.ExtendedProperties = new Event.ExtendedPropertiesData();
             evt.ExtendedProperties.Private__ = new Dictionary<string, string>();
+            evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
+            evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
 
             if (task.IsComplete)
             {
@@ -144,16 +146,23 @@ namespace LifeCoach.GoogleCalendarGateway
                 evt.ExtendedProperties.Private__["Deleted"] = "true";
             }
 
-            if (task.DueDateTime == null)  // then set start and end date far into the future
-            {
-                evt.Start = new EventDateTime() { DateTime = NoDateTimeDate };
-                evt.End = new EventDateTime() { DateTime = NoDateTimeDate };
-            }
-            else
-            {
-                evt.Start = new EventDateTime() { DateTime = task.DueDateTime.Value };
+          
+
+            if (task.DueDateTime != null)
+            {                
                 evt.End = new EventDateTime() { DateTime = task.DueDateTime.Value };
+            }            
+            if (task.StartDateTime != null)
+            {
+                evt.Start = new EventDateTime() { DateTime = task.StartDateTime.Value };
             }
+            // make sure that if either the start and end is defined that the NoDateTimeDate is not used at all
+            if (evt.End.DateTime == NoDateTimeDate && evt.Start.DateTime != NoDateTimeDate)
+                evt.End = evt.Start;
+
+            if (evt.Start.DateTime == NoDateTimeDate && evt.End.DateTime != NoDateTimeDate)
+                evt.Start = evt.End;
+
             return evt;
         }
 
@@ -174,11 +183,13 @@ namespace LifeCoach.GoogleCalendarGateway
             {
                 isDeleted = true;
             }
-
-            if (evt.End.DateTime == NoDateTimeDate)
-                return Task.CreateTask(summary, evt.Id, null, isComplete, isDeleted);
-            else
-                return Task.CreateTask(summary, evt.Id, evt.End.DateTime, isComplete, isDeleted);
+            
+            return Task.CreateTask(summary,
+                evt.Id,
+                evt.End.DateTime != NoDateTimeDate ? evt.End.DateTime : null,
+                isComplete,
+                isDeleted,
+                evt.Start.DateTime != NoDateTimeDate ? evt.Start.DateTime : null);
         }
 
         private string createCalendar(CalendarService calendarService)
