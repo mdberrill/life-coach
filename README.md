@@ -85,3 +85,13 @@ If you want to permanently delete a task, which is one that you cannot restore u
 This will ask for confirmation that you can prevent by using the silent -s switch.
 
     LifeCoach delete-task 6bl -p -s
+
+To set a start time to a task you can use the -s switch with note-task
+
+    LifeCoach note-task "Meet santa clause" 00:00:10 -s 00:00:00
+
+But this can be quite cumbersome, so if you want a quicker method just for today's tasks then you can use set-agenda instead:
+
+    LifeCoach set-agenda 10:00-13:00 "Meet up with Frank"
+
+This will create a new task for today between 10-13.
