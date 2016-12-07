@@ -27,17 +27,17 @@ namespace LifeCoach.Domain
 
         public IEnumerable<Task> GetUnplannedTasks(bool deleted)
         {
-            return _taskRepo.GetTaskWithNoDates().Where(x => x.IsDeleted == deleted);
+            return _taskRepo.GetTaskWithNoDates().Where(x => x.IsDeleted == deleted).OrderBy(x => x.StartDateTime);
         }
 
         public IEnumerable<Task> GetTasksDueOn(DateTime value, bool deleted)
         {
-            return _taskRepo.GetTasksDueOn(value).Where(x=>x.IsDeleted == deleted);
+            return _taskRepo.GetTasksDueOn(value).Where(x=>x.IsDeleted == deleted).OrderBy(x=>x.StartDateTime);
         }
 
         public IEnumerable<Task> GetTasksDueBetween(DateTime from, DateTime to, bool deleted)
         {
-            return _taskRepo.GetTasksDueBetween(from, to).Where(x => x.IsDeleted == deleted);
+            return _taskRepo.GetTasksDueBetween(from, to).Where(x => x.IsDeleted == deleted).OrderBy(x => x.StartDateTime);
         }
 
         public void DeleteTask(string id, bool permanentDelete)

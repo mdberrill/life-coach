@@ -3,6 +3,7 @@ using LifeCoach.Domain;
 using MarkdownLog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LifeCoach.Console
 {
@@ -14,8 +15,21 @@ namespace LifeCoach.Console
             [Value(0, MetaName = "Task Name", Required = true, HelpText = "the name of the task")]
             public string TaskName { get; set; }
 
-            [Value(1, Required = false, Default = null, HelpText = "The due date & time that the task is due e.g 2016-11-19 14:30")]
+            [Value(1, MetaName ="Due time", Required = false, Default = null, HelpText = "The due date & time that the task is due e.g 2016-11-19 14:30")]
             public DateTime? DueDateTime { get; set; }
+
+            [Option('s', HelpText = "The start date & time that the task is planned to start e.g. 2016-11-19 14:30, or for today 14:30")]
+            public DateTime? StartDateTime { get; set; }
+        }
+
+        [Verb("set-agenda", HelpText ="Ask the life coach to set a task for todays agenda")]
+        class AgendaTask
+        {
+            [Value(0, MetaName ="Time range", Required = true, HelpText ="Time range, e.g. 13:30-14:45")]
+            public string TaskTimeRange { get; set; }
+
+            [Value(1, MetaName = "Task Name", Required = true, HelpText = "the name of the task")]
+            public string TaskName { get; set; }
         }
 
         [Verb("list-tasks", HelpText = "Ask the life coach to list all the tasks you currently have")]
@@ -64,15 +78,25 @@ namespace LifeCoach.Console
         }
 
         static int Main(string[] args)
-        {
-            var taskRepo = new GoogleCalendarGateway.GoogleTaskRepository("client_secret.json", "Life Coach");
+        {            
+            var taskRepo = new GoogleCalendarGateway.GoogleTaskRepository(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"client_secret.json"), "Life Coach");
             Domain.LifeCoach lifeCoach = new Domain.LifeCoach(taskRepo);
 
-            return Parser.Default.ParseArguments<NoteTask, TaskList, CompleteTask, DeleteTask>(args)
+            return Parser.Default.ParseArguments<NoteTask, AgendaTask, TaskList, CompleteTask, DeleteTask>(args)
              .MapResult(
                (NoteTask opts) =>
                {
-                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName, dueDateTime: opts.DueDateTime));
+                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName, dueDateTime: opts.DueDateTime, startDateTime: opts.StartDateTime));
+                   return 0;
+               },
+               (AgendaTask opts) =>
+               {
+                   var times = opts.TaskTimeRange.Split('-');
+                   var startTime = DateTime.Parse(times[0]);
+                   var endTime = DateTime.Parse(times[1]);
+                   System.Console.WriteLine("StartTime: " + startTime);
+                   System.Console.WriteLine("EndTime: " + endTime);
+                   lifeCoach.NoteTask(Task.CreateTask(opts.TaskName, dueDateTime: endTime, startDateTime: startTime));
                    return 0;
                },
                (TaskList opts) =>
@@ -146,12 +170,14 @@ namespace LifeCoach.Console
                 return tasks.ToMarkdownTable(
                     x => x.Id.Substring(0, 6),
                     x => x.Description.Length > 40 ? x.Description.Substring(0, 40) + "..." : x.Description,
-                    x => x.DueDateTime.HasValue ? x.DueDateTime.Value.ToString("G") : "-",
+                    x => x.StartDateTime.HasValue ? x.StartDateTime.Value.ToString("dd/MM/yyyy HH:mm") : "-", 
+                    x => x.DueDateTime.HasValue ? x.DueDateTime.Value.ToString("dd/MM/yyyy HH:mm") : "-",                    
                     x => x.IsComplete ? "Yes" : "No")
                     .WithHeaders(
                     "Id",
                     "Description",
-                    "Due Date",
+                    "Start Time", 
+                    "Due Date",                    
                     "Done");
         }
     }
